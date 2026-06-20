@@ -1,9 +1,12 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all
+
+all: up dbt-deps dbt-seed dbt-run dbt-test lint
 
 up:
 	docker compose up db -d --wait
 
 help:
+	@echo "make all         run everything (up + deps + seed + run + test + lint)"
 	@echo "make up          start DB and wait until healthy"
 	@echo "make down        stop containers and remove volumes"
 	@echo "make dbt-deps    install dbt packages"
