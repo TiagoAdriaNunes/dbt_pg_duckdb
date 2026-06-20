@@ -51,9 +51,6 @@ jobs:
       - name: dbt deps
         run: cd dbt && uv run dbt deps --profiles-dir .
 
-      - name: dbt seed
-        run: cd dbt && uv run dbt seed --profiles-dir .
-
       - name: dbt run
         run: cd dbt && uv run dbt run --profiles-dir .
 
