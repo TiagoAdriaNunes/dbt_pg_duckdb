@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli
 
 all: up dbt-deps dbt-seed dbt-run dbt-test lint
 
@@ -14,6 +14,7 @@ help:
 	@echo "make dbt-run     run all models"
 	@echo "make dbt-test    run schema tests"
 	@echo "make lint        ruff check + format check"
+	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
 
 down:
 	docker compose down -v
@@ -33,3 +34,6 @@ dbt-test:
 lint:
 	uv run ruff check .
 	uv run ruff format --check .
+
+duckdb-cli:
+	./scripts/duckdb_cli.sh
