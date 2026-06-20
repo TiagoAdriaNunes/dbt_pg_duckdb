@@ -20,6 +20,34 @@ models:
         data_type: bigint
         tests: [not_null]
 
+  - name: tpch_daily_revenue
+    description: "Incremental daily revenue rollup from lineitems, keyed on ship_date. New dates are appended on each run."
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: ship_date
+        data_type: date
+        tests: [unique, not_null]
+      - name: line_count
+        data_type: bigint
+        tests: [not_null]
+      - name: order_count
+        data_type: bigint
+        tests: [not_null]
+      - name: total_quantity
+        data_type: double precision
+        tests: [not_null]
+      - name: revenue
+        data_type: double precision
+        tests: [not_null]
+      - name: revenue_after_tax
+        data_type: double precision
+        tests: [not_null]
+      - name: avg_discount
+        data_type: double precision
+        tests: [not_null]
+
   - name: tpch_supplier_performance
     description: "Revenue and discount stats per supplier with nation and region context"
     config:
