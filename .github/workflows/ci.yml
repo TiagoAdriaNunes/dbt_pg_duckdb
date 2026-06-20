@@ -1,0 +1,62 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+
+    services:
+      db:
+        image: pgduckdb/pgduckdb:18-v1.1.1
+        env:
+          POSTGRES_PASSWORD: duckdb
+          POSTGRES_DB: analytics
+          POSTGRES_USER: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d analytics"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync
+
+      - name: Lint
+        run: uv run ruff check . && uv run ruff format --check .
+
+      - name: Create pg_duckdb extension
+        run: psql -h localhost -U postgres -d analytics -c "CREATE EXTENSION IF NOT EXISTS pg_duckdb;"
+        env:
+          PGPASSWORD: duckdb
+
+      - name: Load TPC-H data
+        run: uv run python scripts/init_tpch.py
+        env:
+          TPCH_SCALE_FACTOR: "0.1"
+
+      - name: dbt deps
+        run: cd dbt && uv run dbt deps --profiles-dir .
+
+      - name: dbt seed
+        run: cd dbt && uv run dbt seed --profiles-dir .
+
+      - name: dbt run
+        run: cd dbt && uv run dbt run --profiles-dir .
+
+      - name: dbt test
+        run: cd dbt && uv run dbt test --profiles-dir .
