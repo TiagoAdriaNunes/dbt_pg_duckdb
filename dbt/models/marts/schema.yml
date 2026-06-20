@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: orders_summary
+    description: "Per-customer completed order aggregates"
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: order_count
+        tests:
+          - not_null
+      - name: total_amount
+        tests:
+          - not_null

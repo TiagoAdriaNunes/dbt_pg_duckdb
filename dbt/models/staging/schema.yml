@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: stg_orders
+    description: "Cleaned and filtered orders from raw seed data"
+    columns:
+      - name: order_id
+        description: "Primary key"
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+      - name: amount
+        tests:
+          - not_null
+      - name: status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["completed", "pending"]
