@@ -24,16 +24,16 @@
     select market_segment, revenue, order_count, customer_count
     from (
         select
-    c.market_segment,
-    sum(l.extended_price * (1 - l.discount)) as revenue,
-    count(distinct o.order_key) as order_count,
-    count(distinct o.customer_key) as customer_count
-from "analytics"."dev"."stg_tpch_lineitems" as l
-inner join "analytics"."dev"."stg_tpch_orders" as o on l.order_key = o.order_key
+    customers.market_segment,
+    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    count(distinct orders.order_key) as order_count,
+    count(distinct orders.customer_key) as customer_count
+from "analytics"."dev"."stg_tpch_lineitems" as lineitems
+inner join "analytics"."dev"."stg_tpch_orders" as orders on lineitems.order_key = orders.order_key
 inner join
-    "analytics"."dev"."stg_tpch_customers" as c
-    on o.customer_key = c.customer_key
-group by c.market_segment
+    "analytics"."dev"."stg_tpch_customers" as customers
+    on orders.customer_key = customers.customer_key
+group by customers.market_segment
 order by revenue desc
     ) as model_subq
   );

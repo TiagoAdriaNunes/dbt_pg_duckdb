@@ -1,15 +1,15 @@
 select
-    l.order_key,
-    sum(l.extended_price * (1 - l.discount)) as revenue,
-    o.order_date,
-    o.ship_priority
-from "analytics"."dev"."stg_tpch_customers" as c
-inner join "analytics"."dev"."stg_tpch_orders" as o on c.customer_key = o.customer_key
-inner join "analytics"."dev"."stg_tpch_lineitems" as l on o.order_key = l.order_key
+    lineitems.order_key,
+    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    orders.order_date,
+    orders.ship_priority
+from "analytics"."dev"."stg_tpch_customers" as customers
+inner join "analytics"."dev"."stg_tpch_orders" as orders on customers.customer_key = orders.customer_key
+inner join "analytics"."dev"."stg_tpch_lineitems" as lineitems on orders.order_key = lineitems.order_key
 where
-    c.market_segment = 'BUILDING'
-    and o.order_date < date '1995-03-15'
-    and l.ship_date > date '1995-03-15'
-group by l.order_key, o.order_date, o.ship_priority
-order by revenue desc, o.order_date asc
+    customers.market_segment = 'BUILDING'
+    and orders.order_date < date '1995-03-15'
+    and lineitems.ship_date > date '1995-03-15'
+group by lineitems.order_key, orders.order_date, orders.ship_priority
+order by revenue desc, orders.order_date asc
 limit 10

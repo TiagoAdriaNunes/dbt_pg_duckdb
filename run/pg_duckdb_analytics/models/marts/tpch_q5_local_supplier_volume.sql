@@ -22,21 +22,21 @@
     select nation_name, revenue
     from (
         select
-    n.name as nation_name,
-    sum(l.extended_price * (1 - l.discount)) as revenue
-from "analytics"."dev"."stg_tpch_customers" as c
-inner join "analytics"."dev"."stg_tpch_orders" as o on c.customer_key = o.customer_key
-inner join "analytics"."dev"."stg_tpch_lineitems" as l on o.order_key = l.order_key
+    nations.name as nation_name,
+    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue
+from "analytics"."dev"."stg_tpch_customers" as customers
+inner join "analytics"."dev"."stg_tpch_orders" as orders on customers.customer_key = orders.customer_key
+inner join "analytics"."dev"."stg_tpch_lineitems" as lineitems on orders.order_key = lineitems.order_key
 inner join
-    "analytics"."dev"."stg_tpch_suppliers" as s
-    on l.supplier_key = s.supplier_key
-inner join "analytics"."dev"."stg_tpch_nations" as n on s.nation_key = n.nation_key
-inner join "analytics"."dev"."stg_tpch_regions" as r on n.region_key = r.region_key
+    "analytics"."dev"."stg_tpch_suppliers" as suppliers
+    on lineitems.supplier_key = suppliers.supplier_key
+inner join "analytics"."dev"."stg_tpch_nations" as nations on suppliers.nation_key = nations.nation_key
+inner join "analytics"."dev"."stg_tpch_regions" as regions on nations.region_key = regions.region_key
 where
-    r.name = 'ASIA'
-    and o.order_date >= date '1994-01-01'
-    and o.order_date < date '1995-01-01'
-group by n.name
+    regions.name = 'ASIA'
+    and orders.order_date >= date '1994-01-01'
+    and orders.order_date < date '1995-01-01'
+group by nations.name
 order by revenue desc
     ) as model_subq
   );

@@ -1,16 +1,20 @@
 select
-    s.supplier_key,
-    s.name as supplier_name,
-    n.name as nation_name,
-    r.name as region_name,
-    sum(l.extended_price * (1 - l.discount)) as revenue,
-    count(distinct l.order_key) as order_count,
-    round(avg(l.discount)::numeric, 4) as avg_discount
-from "analytics"."dev"."stg_tpch_lineitems" as l
+    suppliers.supplier_key,
+    suppliers.name as supplier_name,
+    nations.name as nation_name,
+    regions.name as region_name,
+    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    count(distinct lineitems.order_key) as order_count,
+    round(avg(lineitems.discount)::numeric, 4) as avg_discount
+from "analytics"."dev"."stg_tpch_lineitems" as lineitems
 inner join
-    "analytics"."dev"."stg_tpch_suppliers" as s
-    on l.supplier_key = s.supplier_key
-inner join "analytics"."dev"."stg_tpch_nations" as n on s.nation_key = n.nation_key
-inner join "analytics"."dev"."stg_tpch_regions" as r on n.region_key = r.region_key
-group by s.supplier_key, s.name, n.name, r.name
+    "analytics"."dev"."stg_tpch_suppliers" as suppliers
+    on lineitems.supplier_key = suppliers.supplier_key
+inner join
+    "analytics"."dev"."stg_tpch_nations" as nations
+    on suppliers.nation_key = nations.nation_key
+inner join
+    "analytics"."dev"."stg_tpch_regions" as regions
+    on nations.region_key = regions.region_key
+group by suppliers.supplier_key, suppliers.name, nations.name, regions.name
 order by revenue desc
