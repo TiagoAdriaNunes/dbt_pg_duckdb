@@ -19,4 +19,5 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["completed", "pending"]
+              arguments:
+                values: ["completed", "pending"]
