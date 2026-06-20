@@ -9,6 +9,9 @@ macro-paths: ["macros"]
 target-path: "target"
 clean-targets: ["target", "dbt_packages"]
 
+on-run-start:
+  - "SET duckdb.force_execution = true"
+
 models:
   pg_duckdb_analytics:
     staging:
