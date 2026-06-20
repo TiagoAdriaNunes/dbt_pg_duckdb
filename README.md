@@ -5,7 +5,7 @@
 
 Dockerized PostgreSQL with the [pg_duckdb](https://github.com/duckdb/pg_duckdb) extension and a dbt project for analytics transformations on TPC-H benchmark data.
 
-**[View dbt docs →](https://tiagoadrianunes.github.io/dbt_pg_duckdb/)**
+**[Data lineage, model contracts, and test results →](https://tiagoadrianunes.github.io/dbt_pg_duckdb/)**
 
 ## Stack
 
