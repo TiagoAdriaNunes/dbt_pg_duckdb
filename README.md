@@ -14,17 +14,21 @@ Dockerized PostgreSQL with the [pg_duckdb](https://github.com/duckdb/pg_duckdb) 
 | Database | `pgduckdb/pgduckdb:18-v1.1.1` — Postgres 18 + DuckDB columnar engine |
 | Transformations | `dbt-postgres` |
 | Python env | `uv` |
-| Lint | `ruff` |
+| Python lint | `ruff` |
+| SQL lint | `sqlfluff` + dbt templater |
+| Git hooks | `pre-commit` |
 
 ## Quickstart
 
 ```bash
 git clone https://github.com/TiagoAdriaNunes/dbt_pg_duckdb.git
 cd dbt_pg_duckdb
+uv sync
+make pre-commit-install  # install git hooks (once)
 make all
 ```
 
-`make all` starts the database, loads TPC-H benchmark data (sf=0.1, ~600k lineitems), runs all dbt models, and runs all tests.
+`make all` starts the database, loads TPC-H benchmark data (sf=0.1, ~600k lineitems), runs all dbt models, tests, and linters.
 
 No `.env` file required — everything defaults to zero-config local credentials.
 
@@ -40,6 +44,8 @@ make dbt-docs-serve     # generate and serve docs at http://localhost:8080
 make simulate-new-data  # insert new lineitem rows with ship_date=today (triggers incremental model)
 make duckdb-cli         # open DuckDB shell with Postgres attached
 make lint               # ruff check + format check
+make lint-sql           # sqlfluff lint on all SQL models and macros
+make pre-commit-install # install git hooks (run once after cloning)
 ```
 
 ## Models
