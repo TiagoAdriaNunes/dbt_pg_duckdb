@@ -1,0 +1,36 @@
+version: 2
+
+exposures:
+  - name: revenue_dashboard
+    type: dashboard
+    maturity: medium
+    owner:
+      name: Tiago Adria Nunes
+      email: tiagoadrianunes@gmail.com
+    description: "Revenue KPIs by market segment and daily trends for business reporting."
+    depends_on:
+      - ref('tpch_revenue_by_segment')
+      - ref('tpch_daily_revenue')
+
+  - name: supplier_performance_report
+    type: analysis
+    maturity: medium
+    owner:
+      name: Tiago Adria Nunes
+      email: tiagoadrianunes@gmail.com
+    description: "Supplier revenue and discount analysis by nation and region."
+    depends_on:
+      - ref('tpch_supplier_performance')
+      - ref('tpch_q5_local_supplier_volume')
+
+  - name: tpch_benchmark_notebook
+    type: notebook
+    maturity: low
+    owner:
+      name: Tiago Adria Nunes
+      email: tiagoadrianunes@gmail.com
+    description: "TPC-H benchmark analysis comparing Postgres vs DuckDB execution engine performance."
+    depends_on:
+      - ref('tpch_q1_pricing_summary')
+      - ref('tpch_q3_shipping_priority')
+      - ref('tpch_q5_local_supplier_volume')
