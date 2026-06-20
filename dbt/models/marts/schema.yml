@@ -9,23 +9,16 @@ models:
     columns:
       - name: customer_id
         data_type: bigint
-        constraints:
-          - type: not_null
-        tests:
-          - unique
+        tests: [unique, not_null]
       - name: order_count
         data_type: bigint
-        constraints:
-          - type: not_null
+        tests: [not_null]
       - name: total_amount
-        data_type: numeric
-        constraints:
-          - type: not_null
+        data_type: numeric(10,2)
+        tests: [not_null]
       - name: first_order_date
         data_type: date
-        constraints:
-          - type: not_null
+        tests: [not_null]
       - name: last_order_date
         data_type: date
-        constraints:
-          - type: not_null
+        tests: [not_null]

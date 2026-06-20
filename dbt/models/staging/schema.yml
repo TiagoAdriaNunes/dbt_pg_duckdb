@@ -10,27 +10,20 @@ models:
       - name: order_id
         description: "Primary key"
         data_type: bigint
-        constraints:
-          - type: not_null
-        tests:
-          - unique
+        tests: [unique, not_null]
       - name: customer_id
         data_type: bigint
-        constraints:
-          - type: not_null
+        tests: [not_null]
       - name: amount
-        data_type: numeric
-        constraints:
-          - type: not_null
+        data_type: numeric(10,2)
+        tests: [not_null]
       - name: status
         data_type: text
-        constraints:
-          - type: not_null
         tests:
+          - not_null
           - accepted_values:
               arguments:
                 values: ["completed", "pending"]
       - name: created_at
         data_type: date
-        constraints:
-          - type: not_null
+        tests: [not_null]

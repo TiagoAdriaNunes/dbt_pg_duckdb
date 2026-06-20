@@ -61,12 +61,10 @@ def load_into_postgres(conn: duckdb.DuckDBPyConnection) -> None:
         conn.execute(f"CREATE OR REPLACE TABLE pg.raw.{table} AS SELECT * FROM staging.{table}")
 
     counts = conn.execute(
-        "SELECT table_name, count(*) "
-        "FROM ("
-        + " UNION ALL ".join(
-            f"SELECT '{t}' AS table_name, count(*) AS cnt FROM pg.raw.{t}" for t in TABLES
+        " UNION ALL ".join(
+            f"SELECT '{t}' AS table_name, count(*) AS row_count FROM pg.raw.{t}" for t in TABLES
         )
-        + ") GROUP BY table_name ORDER BY table_name"
+        + " ORDER BY table_name"
     ).fetchall()
 
     print("Tables created in pg_duckdb (raw schema):")
