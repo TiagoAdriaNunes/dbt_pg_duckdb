@@ -3,14 +3,29 @@ version: 2
 models:
   - name: orders_summary
     description: "Per-customer completed order aggregates"
+    config:
+      contract:
+        enforced: true
     columns:
       - name: customer_id
+        data_type: bigint
+        constraints:
+          - type: not_null
         tests:
           - unique
-          - not_null
       - name: order_count
-        tests:
-          - not_null
+        data_type: bigint
+        constraints:
+          - type: not_null
       - name: total_amount
-        tests:
-          - not_null
+        data_type: numeric
+        constraints:
+          - type: not_null
+      - name: first_order_date
+        data_type: date
+        constraints:
+          - type: not_null
+      - name: last_order_date
+        data_type: date
+        constraints:
+          - type: not_null

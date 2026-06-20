@@ -3,21 +3,34 @@ version: 2
 models:
   - name: stg_orders
     description: "Cleaned and filtered orders from raw seed data"
+    config:
+      contract:
+        enforced: true
     columns:
       - name: order_id
         description: "Primary key"
+        data_type: bigint
+        constraints:
+          - type: not_null
         tests:
           - unique
-          - not_null
       - name: customer_id
-        tests:
-          - not_null
+        data_type: bigint
+        constraints:
+          - type: not_null
       - name: amount
-        tests:
-          - not_null
+        data_type: numeric
+        constraints:
+          - type: not_null
       - name: status
+        data_type: text
+        constraints:
+          - type: not_null
         tests:
-          - not_null
           - accepted_values:
               arguments:
                 values: ["completed", "pending"]
+      - name: created_at
+        data_type: date
+        constraints:
+          - type: not_null
