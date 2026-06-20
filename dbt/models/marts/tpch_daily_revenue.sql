@@ -8,19 +8,18 @@
 }}
 
 select
-    l.ship_date,
+    lineitems.ship_date,
     count(*) as line_count,
-    count(distinct l.order_key) as order_count,
-    sum(l.quantity) as total_quantity,
-    sum(l.extended_price * (1 - l.discount)) as revenue,
-    sum(l.extended_price * (1 - l.discount) * (1 + l.tax)) as revenue_after_tax,
-    avg(l.discount) as avg_discount
-from {{ ref('stg_tpch_lineitems') }} as l
+    count(distinct lineitems.order_key) as order_count,
+    sum(lineitems.quantity) as total_quantity,
+    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    sum(lineitems.extended_price * (1 - lineitems.discount) * (1 + lineitems.tax)) as revenue_after_tax,
+    avg(lineitems.discount) as avg_discount
+from {{ ref('stg_tpch_lineitems') }} as lineitems
 
 {% if is_incremental() %}
-    -- only process ship dates not yet in the table
-    where l.ship_date > (select max(t.ship_date) from {{ this }} as t)
+    where lineitems.ship_date > (select max(t.ship_date) from {{ this }} as t)
 {% endif %}
 
-group by l.ship_date
-order by l.ship_date
+group by lineitems.ship_date
+order by lineitems.ship_date
