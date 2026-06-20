@@ -11,16 +11,16 @@ Dockerized PostgreSQL with the [pg_duckdb](https://github.com/duckdb/pg_duckdb) 
 
 Auto-generated on every push to `main`. Includes:
 
-- **Lineage DAG** — end-to-end graph from raw sources through staging and marts to downstream exposures (dashboards, reports, notebooks)
-- **Model contracts** — enforced column names and data types on all mart models; dbt fails the run if the SQL output doesn't match the declared schema
-- **Test results** — `unique`, `not_null`, and `accepted_values` tests on every key column, visible per model
-- **Exposures** — downstream consumers declared in YAML so the lineage shows where data lands after the marts
+- **Lineage DAG** - end-to-end graph from raw sources through staging and marts to downstream exposures (dashboards, reports, notebooks)
+- **Model contracts** - enforced column names and data types on all mart models; dbt fails the run if the SQL output doesn't match the declared schema
+- **Test results** - `unique`, `not_null`, and `accepted_values` tests on every key column, visible per model
+- **Exposures** - downstream consumers declared in YAML so the lineage shows where data lands after the marts
 
 ## Stack
 
 | Layer | Tool |
 |-------|------|
-| Database | `pgduckdb/pgduckdb:18-v1.1.1` — Postgres 18 + DuckDB columnar engine |
+| Database | `pgduckdb/pgduckdb:18-v1.1.1` - Postgres 18 + DuckDB columnar engine |
 | Transformations | [`dbt-postgres`](https://github.com/dbt-labs/dbt-core) |
 | Python env | `uv` |
 | Python lint | `ruff` |
@@ -60,7 +60,7 @@ make pre-commit-install # install git hooks (run once after cloning)
 ## dbt features
 
 ### Contracts
-All mart models declare explicit column names and data types in YAML. dbt enforces these at run time — if the SQL produces a different schema, the run fails before any data is written.
+All mart models declare explicit column names and data types in YAML. dbt enforces these at run time - if the SQL produces a different schema, the run fails before any data is written.
 
 ### Tests
 Every key column has at least one test:
@@ -93,9 +93,9 @@ psql -c "SELECT * FROM snapshots.snap_tpch_customers WHERE dbt_valid_to IS NOT N
 
 ### Exposures
 Downstream consumers are declared in YAML so the lineage DAG extends beyond the marts:
-- `revenue_dashboard` — consumes `tpch_revenue_by_segment` + `tpch_daily_revenue`
-- `supplier_performance_report` — consumes `tpch_supplier_performance` + `tpch_q5_local_supplier_volume`
-- `tpch_benchmark_notebook` — consumes Q1, Q3, Q5 models
+- `revenue_dashboard` - consumes `tpch_revenue_by_segment` + `tpch_daily_revenue`
+- `supplier_performance_report` - consumes `tpch_supplier_performance` + `tpch_q5_local_supplier_volume`
+- `tpch_benchmark_notebook` - consumes Q1, Q3, Q5 models
 
 ### DuckDB execution
 All dbt runs use `SET duckdb.force_execution = true` via an `on-run-start` hook, routing every query through DuckDB's vectorized columnar engine instead of the Postgres planner.
@@ -104,23 +104,23 @@ All dbt runs use `SET duckdb.force_execution = true` via an `on-run-start` hook,
 
 ```
 staging/                      (views)
-  stg_customers               — TPC-H customers
-  stg_orders                  — TPC-H orders
-  stg_lineitems               — TPC-H lineitems
-  stg_suppliers               — TPC-H suppliers
-  stg_nations                 — TPC-H nations
-  stg_regions                 — TPC-H regions
+  stg_customers               - TPC-H customers
+  stg_orders                  - TPC-H orders
+  stg_lineitems               - TPC-H lineitems
+  stg_suppliers               - TPC-H suppliers
+  stg_nations                 - TPC-H nations
+  stg_regions                 - TPC-H regions
 
 marts/                        (tables, enforced contracts)
-  tpch_revenue_by_segment     — revenue by market segment
-  tpch_supplier_performance   — supplier revenue and discount stats by nation
-  tpch_daily_revenue          — incremental daily revenue rollup (keyed on ship_date)
-  tpch_q1_pricing_summary     — TPC-H Q1: aggregate scan over all lineitems
-  tpch_q3_shipping_priority   — TPC-H Q3: top 10 unshipped orders by revenue
-  tpch_q5_local_supplier_volume — TPC-H Q5: supplier revenue by nation in ASIA
+  tpch_revenue_by_segment     - revenue by market segment
+  tpch_supplier_performance   - supplier revenue and discount stats by nation
+  tpch_daily_revenue          - incremental daily revenue rollup (keyed on ship_date)
+  tpch_q1_pricing_summary     - TPC-H Q1: aggregate scan over all lineitems
+  tpch_q3_shipping_priority   - TPC-H Q3: top 10 unshipped orders by revenue
+  tpch_q5_local_supplier_volume - TPC-H Q5: supplier revenue by nation in ASIA
 
 snapshots/
-  snap_tpch_customers         — SCD2 history of customer segment and balance changes
+  snap_tpch_customers         - SCD2 history of customer segment and balance changes
 ```
 
 ## Environments
