@@ -19,20 +19,6 @@ BATCH_SIZE = int(os.environ.get("SIMULATE_BATCH_SIZE", "1000"))
 PG_CONN = f"host={PG_HOST} port={PG_PORT} dbname={PG_DB} user={PG_USER} password={PG_PASSWORD}"
 
 
-def simulate_customer_changes(conn: duckdb.DuckDBPyConnection) -> None:
-    """Flip 100 customers from BUILDING to MACHINERY to trigger snapshot changes."""
-    conn.execute("""
-        UPDATE pg.raw.customer
-        SET c_mktsegment = 'MACHINERY'
-        WHERE c_custkey IN (
-            SELECT c_custkey FROM pg.raw.customer
-            WHERE c_mktsegment = 'BUILDING'
-            LIMIT 100
-        )
-    """)
-    print("Updated 100 customers: BUILDING → MACHINERY (triggers snapshot SCD2 rows)")
-
-
 def main() -> None:
     conn = duckdb.connect()
     conn.execute("INSTALL postgres; LOAD postgres")
@@ -68,7 +54,16 @@ def main() -> None:
         f"SELECT count(*) FROM pg.raw.lineitem WHERE l_shipdate = '{today}'"
     ).fetchone()[0]
     print(f"Inserted {count:,} new lineitem rows with ship_date={today}")
-    simulate_customer_changes(conn)
+    conn.execute("""
+        UPDATE pg.raw.customer
+        SET c_mktsegment = 'MACHINERY'
+        WHERE c_custkey IN (
+            SELECT c_custkey FROM pg.raw.customer
+            WHERE c_mktsegment = 'BUILDING'
+            LIMIT 100
+        )
+    """)
+    print("Updated 100 customers: BUILDING -> MACHINERY (triggers snapshot SCD2 rows)")
     conn.close()
 
 

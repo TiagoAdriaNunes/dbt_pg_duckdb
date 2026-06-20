@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test dbt-snapshot lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
+.PHONY: up down dbt-deps dbt-run dbt-test dbt-snapshot lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
 
 all: up dbt-deps tpch-init dbt-run dbt-test lint lint-sql
 
@@ -10,7 +10,6 @@ help:
 	@echo "make up          start DB and wait until healthy"
 	@echo "make down        stop containers and remove volumes"
 	@echo "make dbt-deps    install dbt packages"
-	@echo "make dbt-seed    load seed CSV files"
 	@echo "make dbt-run     run all models"
 	@echo "make dbt-test     run schema tests"
 	@echo "make dbt-snapshot run SCD2 snapshots"
@@ -28,9 +27,6 @@ down:
 
 dbt-deps:
 	cd dbt && uv run dbt deps --profiles-dir .
-
-dbt-seed:
-	cd dbt && uv run dbt seed --profiles-dir .
 
 dbt-run:
 	cd dbt && uv run dbt run --profiles-dir .

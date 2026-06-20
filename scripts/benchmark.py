@@ -70,7 +70,7 @@ QUERIES = {
 }
 
 
-def bench(cur: "psycopg2.cursor", sql: str, use_duckdb: bool) -> float:
+def bench(cur, sql: str, use_duckdb: bool) -> float:
     cur.execute(f"SET duckdb.force_execution = {'true' if use_duckdb else 'false'}")
     times = []
     for _ in range(RUNS):
