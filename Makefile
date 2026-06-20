@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli tpch-init
 
 all: up dbt-deps dbt-seed dbt-run dbt-test lint
 
@@ -15,6 +15,7 @@ help:
 	@echo "make dbt-test    run schema tests"
 	@echo "make lint        ruff check + format check"
 	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
+	@echo "make tpch-init   load TPC-H benchmark data into raw schema (idempotent)"
 
 down:
 	docker compose down -v
@@ -37,3 +38,6 @@ lint:
 
 duckdb-cli:
 	./scripts/duckdb_cli.sh
+
+tpch-init:
+	uv run python scripts/init_tpch.py
