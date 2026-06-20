@@ -1,0 +1,19 @@
+[project]
+name = "dbt-pg-duckdb"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "dbt-postgres>=1.9",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.9",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
