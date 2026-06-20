@@ -1,6 +1,6 @@
 .PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve
 
-all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint
+all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint lint-sql
 
 up:
 	docker compose up db -d --wait
