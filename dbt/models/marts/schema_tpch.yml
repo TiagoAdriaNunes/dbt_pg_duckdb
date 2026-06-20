@@ -75,3 +75,72 @@ models:
       - name: avg_discount
         data_type: numeric(18,4)
         tests: [not_null]
+
+  - name: tpch_q1_pricing_summary
+    description: "TPC-H Q1 — pricing summary report aggregated by return flag and line status"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: return_flag
+        data_type: text
+        tests: [not_null]
+      - name: line_status
+        data_type: text
+        tests: [not_null]
+      - name: sum_qty
+        data_type: double precision
+        tests: [not_null]
+      - name: sum_base_price
+        data_type: double precision
+        tests: [not_null]
+      - name: sum_disc_price
+        data_type: double precision
+        tests: [not_null]
+      - name: sum_charge
+        data_type: double precision
+        tests: [not_null]
+      - name: avg_qty
+        data_type: double precision
+        tests: [not_null]
+      - name: avg_price
+        data_type: double precision
+        tests: [not_null]
+      - name: avg_disc
+        data_type: double precision
+        tests: [not_null]
+      - name: count_order
+        data_type: bigint
+        tests: [not_null]
+
+  - name: tpch_q3_shipping_priority
+    description: "TPC-H Q3 — top 10 unshipped orders with highest revenue for BUILDING segment"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: order_key
+        data_type: bigint
+        tests: [not_null]
+      - name: revenue
+        data_type: double precision
+        tests: [not_null]
+      - name: order_date
+        data_type: date
+        tests: [not_null]
+      - name: ship_priority
+        data_type: bigint
+        tests: [not_null]
+
+  - name: tpch_q5_local_supplier_volume
+    description: "TPC-H Q5 — revenue by nation for suppliers in the ASIA region (1994)"
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: nation_name
+        data_type: text
+        tests: [unique, not_null]
+      - name: revenue
+        data_type: double precision
+        tests: [not_null]

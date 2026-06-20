@@ -65,7 +65,10 @@ marts/
   orders_summary           — order totals by status (table)
   tpch_revenue_by_segment  — revenue by market segment (table)
   tpch_supplier_performance — supplier revenue and discount stats (table)
-  tpch_daily_revenue       — incremental daily revenue rollup (table, keyed on ship_date)
+  tpch_daily_revenue           — incremental daily revenue rollup (table, keyed on ship_date)
+  tpch_q1_pricing_summary      — TPC-H Q1: pricing summary by return flag and line status
+  tpch_q3_shipping_priority    — TPC-H Q3: top 10 unshipped orders by revenue (BUILDING segment)
+  tpch_q5_local_supplier_volume — TPC-H Q5: supplier revenue by nation in ASIA region
 ```
 
 All mart models have enforced dbt contracts. The `tpch_daily_revenue` model is incremental — `make simulate-new-data` inserts rows with today's date, then `make dbt-run` picks them up via DuckDB's columnar engine.
