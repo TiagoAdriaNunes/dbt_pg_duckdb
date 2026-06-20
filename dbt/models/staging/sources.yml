@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: tpch
+    schema: raw
+    description: "TPC-H benchmark data loaded via scripts/init_tpch.py"
+    tables:
+      - name: orders
+      - name: lineitem
+      - name: customer
+      - name: supplier
+      - name: nation
+      - name: region
+      - name: part
+      - name: partsupp
