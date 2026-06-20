@@ -9,7 +9,7 @@ select
     avg(lineitems.extended_price) as avg_price,
     avg(lineitems.discount) as avg_disc,
     count(*) as count_order
-from {{ ref('stg_tpch_lineitems') }} as lineitems
+from {{ ref('stg_lineitems') }} as lineitems
 where lineitems.ship_date <= date '1998-09-02'
 group by lineitems.return_flag, lineitems.line_status
 order by lineitems.return_flag, lineitems.line_status

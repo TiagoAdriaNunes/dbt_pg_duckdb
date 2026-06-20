@@ -1,7 +1,7 @@
 version: 2
 
 models:
-  - name: stg_tpch_orders
+  - name: stg_orders
     description: "Cleaned TPC-H orders with renamed columns"
     config:
       contract:
@@ -27,7 +27,7 @@ models:
       - name: ship_priority
         data_type: bigint
 
-  - name: stg_tpch_lineitems
+  - name: stg_lineitems
     description: "Cleaned TPC-H line items with renamed columns"
     config:
       contract:
@@ -70,7 +70,7 @@ models:
       - name: ship_mode
         data_type: text
 
-  - name: stg_tpch_customers
+  - name: stg_customers
     description: "Cleaned TPC-H customers with renamed columns"
     config:
       contract:
@@ -95,7 +95,7 @@ models:
         data_type: text
         tests: [not_null]
 
-  - name: stg_tpch_suppliers
+  - name: stg_suppliers
     description: "Cleaned TPC-H suppliers with renamed columns"
     config:
       contract:
@@ -117,7 +117,7 @@ models:
       - name: account_balance
         data_type: double precision
 
-  - name: stg_tpch_nations
+  - name: stg_nations
     description: "Cleaned TPC-H nations with renamed columns"
     config:
       contract:
@@ -133,7 +133,7 @@ models:
         data_type: bigint
         tests: [not_null]
 
-  - name: stg_tpch_regions
+  - name: stg_regions
     description: "Cleaned TPC-H regions with renamed columns"
     config:
       contract:

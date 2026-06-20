@@ -42,7 +42,7 @@ make all
 ## Commands
 
 ```bash
-make all                # full pipeline: up + deps + tpch-init + seed + run + test + lint
+make all                # full pipeline: up + deps + tpch-init + run + test + lint
 make up                 # start DB and wait until healthy
 make down               # stop containers and remove volumes
 make dbt-run            # run all models
@@ -104,17 +104,14 @@ All dbt runs use `SET duckdb.force_execution = true` via an `on-run-start` hook,
 
 ```
 staging/                      (views)
-  stg_orders                  — seed-based orders
-  stg_tpch_customers          — TPC-H customers
-  stg_tpch_orders             — TPC-H orders
-  stg_tpch_lineitems          — TPC-H lineitems
-  stg_tpch_suppliers          — TPC-H suppliers
-  stg_tpch_nations            — TPC-H nations
-  stg_tpch_regions            — TPC-H regions
-  stg_tpch_parts              — TPC-H parts
+  stg_customers               — TPC-H customers
+  stg_orders                  — TPC-H orders
+  stg_lineitems               — TPC-H lineitems
+  stg_suppliers               — TPC-H suppliers
+  stg_nations                 — TPC-H nations
+  stg_regions                 — TPC-H regions
 
 marts/                        (tables, enforced contracts)
-  orders_summary              — order totals by status
   tpch_revenue_by_segment     — revenue by market segment
   tpch_supplier_performance   — supplier revenue and discount stats by nation
   tpch_daily_revenue          — incremental daily revenue rollup (keyed on ship_date)

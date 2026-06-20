@@ -3,10 +3,10 @@ select
     sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
     count(distinct orders.order_key) as order_count,
     count(distinct orders.customer_key) as customer_count
-from {{ ref('stg_tpch_lineitems') }} as lineitems
-inner join {{ ref('stg_tpch_orders') }} as orders on lineitems.order_key = orders.order_key
+from {{ ref('stg_lineitems') }} as lineitems
+inner join {{ ref('stg_orders') }} as orders on lineitems.order_key = orders.order_key
 inner join
-    {{ ref('stg_tpch_customers') }} as customers
+    {{ ref('stg_customers') }} as customers
     on orders.customer_key = customers.customer_key
 group by customers.market_segment
 order by revenue desc

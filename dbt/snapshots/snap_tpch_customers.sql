@@ -10,6 +10,6 @@
     )
 }}
 
-    select * from {{ ref('stg_tpch_customers') }}
+    select * from {{ ref('stg_customers') }}
 
 {% endsnapshot %}
