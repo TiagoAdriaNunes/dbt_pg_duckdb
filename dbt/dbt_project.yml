@@ -4,6 +4,7 @@ profile: pg_duckdb_analytics
 
 model-paths: ["models"]
 seed-paths: ["seeds"]
+snapshot-paths: ["snapshots"]
 test-paths: ["tests"]
 macro-paths: ["macros"]
 target-path: "target"

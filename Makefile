@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test dbt-snapshot lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
 
 all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint lint-sql
 
@@ -12,7 +12,8 @@ help:
 	@echo "make dbt-deps    install dbt packages"
 	@echo "make dbt-seed    load seed CSV files"
 	@echo "make dbt-run     run all models"
-	@echo "make dbt-test    run schema tests"
+	@echo "make dbt-test     run schema tests"
+	@echo "make dbt-snapshot run SCD2 snapshots"
 	@echo "make lint        ruff check + format check"
 	@echo "make lint-sql    sqlfluff lint on all dbt SQL models and macros"
 	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
@@ -36,6 +37,9 @@ dbt-run:
 
 dbt-test:
 	cd dbt && uv run dbt test --profiles-dir .
+
+dbt-snapshot:
+	cd dbt && uv run dbt snapshot --profiles-dir .
 
 lint:
 	uv run ruff check .
