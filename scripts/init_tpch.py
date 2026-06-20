@@ -13,7 +13,7 @@ PG_PORT = os.environ.get("POSTGRES_PORT", "5432")
 PG_USER = os.environ.get("POSTGRES_USER", "postgres")
 PG_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "duckdb")
 PG_DB = os.environ.get("POSTGRES_DB", "analytics")
-SCALE_FACTOR = float(os.environ.get("TPCH_SCALE_FACTOR", "0.1"))  # sf=0.1 ≈ 100 MB, sf=1 ≈ 1 GB
+SCALE_FACTOR = float(os.environ.get("TPCH_SCALE_FACTOR", "1"))  # sf=0.1 ≈ 100 MB, sf=1 ≈ 1 GB
 STAGING_DB = "/tmp/tpch_staging.duckdb"
 
 PG_CONN = f"host={PG_HOST} port={PG_PORT} dbname={PG_DB} user={PG_USER} password={PG_PASSWORD}"
