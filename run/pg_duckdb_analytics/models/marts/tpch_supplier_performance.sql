@@ -34,15 +34,15 @@
     sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
     count(distinct lineitems.order_key) as order_count,
     round(avg(lineitems.discount)::numeric, 4) as avg_discount
-from "analytics"."dev"."stg_tpch_lineitems" as lineitems
+from "analytics"."dev"."stg_lineitems" as lineitems
 inner join
-    "analytics"."dev"."stg_tpch_suppliers" as suppliers
+    "analytics"."dev"."stg_suppliers" as suppliers
     on lineitems.supplier_key = suppliers.supplier_key
 inner join
-    "analytics"."dev"."stg_tpch_nations" as nations
+    "analytics"."dev"."stg_nations" as nations
     on suppliers.nation_key = nations.nation_key
 inner join
-    "analytics"."dev"."stg_tpch_regions" as regions
+    "analytics"."dev"."stg_regions" as regions
     on nations.region_key = regions.region_key
 group by suppliers.supplier_key, suppliers.name, nations.name, regions.name
 order by revenue desc

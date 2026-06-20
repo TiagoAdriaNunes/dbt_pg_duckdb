@@ -37,7 +37,7 @@ select
     sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
     sum(lineitems.extended_price * (1 - lineitems.discount) * (1 + lineitems.tax)) as revenue_after_tax,
     avg(lineitems.discount) as avg_discount
-from "analytics"."dev"."stg_tpch_lineitems" as lineitems
+from "analytics"."dev"."stg_lineitems" as lineitems
 
 
 

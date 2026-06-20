@@ -28,10 +28,10 @@
     sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
     count(distinct orders.order_key) as order_count,
     count(distinct orders.customer_key) as customer_count
-from "analytics"."dev"."stg_tpch_lineitems" as lineitems
-inner join "analytics"."dev"."stg_tpch_orders" as orders on lineitems.order_key = orders.order_key
+from "analytics"."dev"."stg_lineitems" as lineitems
+inner join "analytics"."dev"."stg_orders" as orders on lineitems.order_key = orders.order_key
 inner join
-    "analytics"."dev"."stg_tpch_customers" as customers
+    "analytics"."dev"."stg_customers" as customers
     on orders.customer_key = customers.customer_key
 group by customers.market_segment
 order by revenue desc
