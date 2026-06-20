@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli tpch-init
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli tpch-init simulate-new-data
 
 all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint
 
@@ -15,7 +15,8 @@ help:
 	@echo "make dbt-test    run schema tests"
 	@echo "make lint        ruff check + format check"
 	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
-	@echo "make tpch-init   load TPC-H benchmark data into raw schema (idempotent)"
+	@echo "make tpch-init          load TPC-H benchmark data into raw schema (idempotent)"
+	@echo "make simulate-new-data  insert 1000 new lineitem rows with ship_date=today"
 
 down:
 	docker compose down -v
@@ -41,3 +42,6 @@ duckdb-cli:
 
 tpch-init:
 	uv run python scripts/init_tpch.py
+
+simulate-new-data:
+	uv run python scripts/simulate_new_data.py
