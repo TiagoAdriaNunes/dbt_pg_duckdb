@@ -12,7 +12,7 @@ Dockerized PostgreSQL with the [pg_duckdb](https://github.com/duckdb/pg_duckdb) 
 | Layer | Tool |
 |-------|------|
 | Database | `pgduckdb/pgduckdb:18-v1.1.1` — Postgres 18 + DuckDB columnar engine |
-| Transformations | `dbt-postgres` |
+| Transformations | [`dbt-postgres`](https://github.com/dbt-labs/dbt-core) |
 | Python env | `uv` |
 | Python lint | `ruff` |
 | SQL lint | `sqlfluff` + dbt templater |
