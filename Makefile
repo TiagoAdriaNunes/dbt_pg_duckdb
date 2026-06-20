@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli tpch-init simulate-new-data
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve
 
 all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint
 
@@ -17,6 +17,8 @@ help:
 	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
 	@echo "make tpch-init          load TPC-H benchmark data into raw schema (idempotent)"
 	@echo "make simulate-new-data  insert 1000 new lineitem rows with ship_date=today"
+	@echo "make dbt-docs-generate  generate docs catalog (no server)"
+	@echo "make dbt-docs-serve     generate docs and open at http://localhost:8080"
 
 down:
 	docker compose down -v
@@ -45,3 +47,9 @@ tpch-init:
 
 simulate-new-data:
 	uv run python scripts/simulate_new_data.py
+
+dbt-docs-generate:
+	cd dbt && uv run dbt docs generate --profiles-dir .
+
+dbt-docs-serve: dbt-docs-generate
+	cd dbt && uv run dbt docs serve --profiles-dir . --port 8080
