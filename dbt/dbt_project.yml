@@ -1,0 +1,17 @@
+name: pg_duckdb_analytics
+version: "1.0.0"
+profile: pg_duckdb_analytics
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+target-path: "target"
+clean-targets: ["target", "dbt_packages"]
+
+models:
+  pg_duckdb_analytics:
+    staging:
+      +materialized: view
+    marts:
+      +materialized: table
