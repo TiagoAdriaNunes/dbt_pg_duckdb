@@ -1,7 +1,16 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help
 
 up:
-	docker compose up db -d
+	docker compose up db -d --wait
+
+help:
+	@echo "make up          start DB and wait until healthy"
+	@echo "make down        stop containers and remove volumes"
+	@echo "make dbt-deps    install dbt packages"
+	@echo "make dbt-seed    load seed CSV files"
+	@echo "make dbt-run     run all models"
+	@echo "make dbt-test    run schema tests"
+	@echo "make lint        ruff check + format check"
 
 down:
 	docker compose down -v
