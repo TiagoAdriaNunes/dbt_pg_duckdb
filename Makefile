@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install
 
 all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint lint-sql
 
@@ -42,6 +42,9 @@ lint:
 
 lint-sql:
 	uv run sqlfluff lint dbt/models dbt/macros
+
+pre-commit-install:
+	uv run pre-commit install
 
 duckdb-cli:
 	./scripts/duckdb_cli.sh
