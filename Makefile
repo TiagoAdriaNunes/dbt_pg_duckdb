@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
 
 all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint lint-sql
 
@@ -18,6 +18,7 @@ help:
 	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
 	@echo "make tpch-init          load TPC-H benchmark data into raw schema (idempotent)"
 	@echo "make simulate-new-data  insert 1000 new lineitem rows with ship_date=today"
+	@echo "make benchmark          run TPC-H Q1/Q3/Q5 under Postgres vs DuckDB engine"
 	@echo "make dbt-docs-generate  generate docs catalog (no server)"
 	@echo "make dbt-docs-serve     generate docs and open at http://localhost:8080"
 
@@ -54,6 +55,9 @@ tpch-init:
 
 simulate-new-data:
 	uv run python scripts/simulate_new_data.py
+
+benchmark:
+	uv run python scripts/benchmark.py
 
 dbt-docs-generate:
 	cd dbt && uv run dbt docs generate --profiles-dir .
