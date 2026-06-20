@@ -1,0 +1,15 @@
+[sqlfluff]
+dialect = postgres
+templater = dbt
+exclude_rules = ST06,RF04
+
+[sqlfluff:templater:dbt]
+project_dir = ./dbt
+profiles_dir = ./dbt
+
+[sqlfluff:indentation]
+indent_unit = space
+tab_space_size = 4
+
+[sqlfluff:layout:type:comma]
+line_position = trailing

@@ -2,7 +2,7 @@
 select
     customer_id,
     count(*) as order_count,
-    sum(amount)::numeric(10,2) as total_amount,
+    sum(amount)::numeric(10, 2) as total_amount,
     min(created_at) as first_order_date,
     max(created_at) as last_order_date
 from {{ ref('stg_orders') }}

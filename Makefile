@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve
+.PHONY: up down dbt-deps dbt-seed dbt-run dbt-test lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve
 
 all: up dbt-deps tpch-init dbt-seed dbt-run dbt-test lint
 
@@ -14,6 +14,7 @@ help:
 	@echo "make dbt-run     run all models"
 	@echo "make dbt-test    run schema tests"
 	@echo "make lint        ruff check + format check"
+	@echo "make lint-sql    sqlfluff lint on all dbt SQL models and macros"
 	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
 	@echo "make tpch-init          load TPC-H benchmark data into raw schema (idempotent)"
 	@echo "make simulate-new-data  insert 1000 new lineitem rows with ship_date=today"
@@ -38,6 +39,9 @@ dbt-test:
 lint:
 	uv run ruff check .
 	uv run ruff format --check .
+
+lint-sql:
+	uv run sqlfluff lint dbt/models dbt/macros
 
 duckdb-cli:
 	./scripts/duckdb_cli.sh

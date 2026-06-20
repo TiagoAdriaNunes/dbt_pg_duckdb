@@ -60,3 +60,6 @@ jobs:
 
       - name: dbt test
         run: cd dbt && uv run dbt test --profiles-dir .
+
+      - name: SQL lint
+        run: uv run sqlfluff lint dbt/models dbt/macros
