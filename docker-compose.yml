@@ -31,7 +31,6 @@ services:
       db:
         condition: service_healthy
     working_dir: /app/dbt
-    # ponytail: no command — run dbt interactively via `docker compose run dbt dbt run`
 
 volumes:
   pgdata:
