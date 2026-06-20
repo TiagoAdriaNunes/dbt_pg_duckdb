@@ -1,0 +1,1 @@
+SET duckdb.force_execution = true
