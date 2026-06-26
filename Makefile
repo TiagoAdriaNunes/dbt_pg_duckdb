@@ -3,6 +3,7 @@
 all: up dbt-deps tpch-init dbt-run dbt-test lint lint-sql
 
 up:
+	@docker info > /dev/null 2>&1 || (echo "Docker daemon is not running. Start Docker Desktop and retry."; exit 1)
 	docker compose up db -d --wait
 
 help:
