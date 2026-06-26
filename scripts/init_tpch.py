@@ -4,10 +4,19 @@ Generates synthetic supply-chain data at the requested scale factor.
 Idempotent: skips generation if tables already exist in the raw schema.
 """
 
+import logging
 import os
 import tempfile
+import time
 
 import duckdb
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s %(levelname)s %(message)s",
+    datefmt="%H:%M:%S",
+)
+log = logging.getLogger(__name__)
 
 PG_HOST = os.environ.get("POSTGRES_HOST", "localhost")
 PG_PORT = os.environ.get("POSTGRES_PORT", "5432")
@@ -37,7 +46,7 @@ def already_loaded(conn: duckdb.DuckDBPyConnection) -> bool:
         ).fetchone()
         if row and row[0] > 0:
             count = conn.execute("SELECT count(*) FROM pg.raw.customer").fetchone()[0]
-            print(f"TPC-H already present ({count:,} customers). Skipping.")
+            log.info("TPC-H already present (%s customers). Skipping.", f"{count:,}")
             return True
     except Exception:
         pass
@@ -46,20 +55,34 @@ def already_loaded(conn: duckdb.DuckDBPyConnection) -> bool:
 
 def generate_staging() -> None:
     size_hint = f"~{SCALE_FACTOR} GB" if SCALE_FACTOR >= 1 else f"~{int(SCALE_FACTOR * 1000)} MB"
-    print(f"Generating TPC-H data (scale_factor={SCALE_FACTOR}, {size_hint})...")
+    log.info("Starting TPC-H dbgen (scale_factor=%s, %s)", SCALE_FACTOR, size_hint)
+    t0 = time.time()
     staging = duckdb.connect(STAGING_DB)
     staging.execute(f"SET temp_directory='{tempfile.gettempdir()}'")
     staging.execute("INSTALL tpch; LOAD tpch")
     staging.execute(f"CALL dbgen(sf={SCALE_FACTOR})")
     staging.close()
+    log.info("Data generation done in %.1fs", time.time() - t0)
 
 
 def load_into_postgres(conn: duckdb.DuckDBPyConnection) -> None:
-    print("Loading TPC-H tables into Postgres (raw schema)...")
+    log.info("Loading TPC-H tables into Postgres (raw schema)...")
     conn.execute(f"ATTACH '{STAGING_DB}' AS staging (READ_ONLY)")
     conn.execute("CREATE SCHEMA IF NOT EXISTS pg.raw")
+    conn.execute("CALL postgres_execute('pg', 'SET synchronous_commit = off')")
+    total_t0 = time.time()
     for table in TABLES:
-        conn.execute(f"CREATE OR REPLACE TABLE pg.raw.{table} AS SELECT * FROM staging.{table}")
+        t0 = time.time()
+        log.info("Loading %s...", table)
+        # UNLOGGED skips WAL entirely — safe for regeneratable benchmark data
+        conn.execute(
+            f"CREATE OR REPLACE TABLE pg.raw.{table} AS SELECT * FROM staging.{table} WHERE false"
+        )
+        conn.execute(f"CALL postgres_execute('pg', 'ALTER TABLE raw.{table} SET UNLOGGED')")
+        conn.execute("CALL pg_clear_cache()")
+        conn.execute(f"INSERT INTO pg.raw.{table} SELECT * FROM staging.{table}")
+        log.info("  %s done in %.1fs", table, time.time() - t0)
+    log.info("All tables loaded in %.1fs", time.time() - total_t0)
 
     counts = conn.execute(
         " UNION ALL ".join(
@@ -68,9 +91,9 @@ def load_into_postgres(conn: duckdb.DuckDBPyConnection) -> None:
         + " ORDER BY table_name"
     ).fetchall()
 
-    print("Tables created in pg_duckdb (raw schema):")
+    log.info("Row counts:")
     for table, count in counts:
-        print(f"  {table:<12} {count:>10,} rows")
+        log.info("  %-12s %10s rows", table, f"{count:,}")
 
 
 def main() -> None:
