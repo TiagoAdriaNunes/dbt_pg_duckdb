@@ -1,4 +1,4 @@
-.PHONY: up down dbt-deps dbt-run dbt-test dbt-snapshot lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
+.PHONY: up down clean logs dbt-deps dbt-run dbt-test dbt-snapshot lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
 
 all: up dbt-deps tpch-init dbt-run dbt-test lint lint-sql
 
@@ -25,6 +25,12 @@ help:
 
 down:
 	docker compose down -v
+
+clean:
+	docker compose down -v --rmi all
+
+logs:
+	docker compose logs db -f
 
 dbt-deps:
 	cd dbt && uv run dbt deps --profiles-dir .

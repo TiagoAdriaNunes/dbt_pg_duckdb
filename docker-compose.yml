@@ -1,6 +1,7 @@
 services:
   db:
     image: pgduckdb/pgduckdb:18-v1.1.1
+    command: postgres -c max_wal_size=4GB
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-duckdb}
       POSTGRES_DB: ${POSTGRES_DB:-analytics}
