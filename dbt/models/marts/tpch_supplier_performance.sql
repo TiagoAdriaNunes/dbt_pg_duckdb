@@ -16,5 +16,6 @@ inner join
 inner join
     {{ ref('stg_regions') }} as regions
     on nations.region_key = regions.region_key
+where lineitems.ship_date >= date '1996-01-01'
 group by suppliers.supplier_key, suppliers.name, nations.name, regions.name
 order by revenue desc

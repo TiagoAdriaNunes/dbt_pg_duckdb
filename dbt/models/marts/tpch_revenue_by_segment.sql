@@ -8,5 +8,6 @@ inner join {{ ref('stg_orders') }} as orders on lineitems.order_key = orders.ord
 inner join
     {{ ref('stg_customers') }} as customers
     on orders.customer_key = customers.customer_key
+where orders.order_date >= date '1996-01-01'
 group by customers.market_segment
 order by revenue desc

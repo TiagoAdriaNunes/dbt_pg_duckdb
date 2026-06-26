@@ -1,4 +1,4 @@
-.PHONY: up down clean logs dbt-deps dbt-run dbt-test dbt-snapshot lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark
+.PHONY: up down clean logs dbt-deps dbt-run dbt-test dbt-snapshot lint lint-sql help all duckdb-cli tpch-init simulate-new-data dbt-docs-generate dbt-docs-serve pre-commit-install benchmark check-engine
 
 all: up dbt-deps tpch-init dbt-run dbt-test lint lint-sql
 
@@ -65,6 +65,12 @@ simulate-new-data:
 
 benchmark:
 	uv run python scripts/benchmark.py
+
+check-engine:
+	docker compose exec db psql -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-analytics} \
+		-c "SHOW duckdb.force_execution" \
+		-c "SET duckdb.force_execution = true" \
+		-c "SELECT * FROM duckdb.query('SELECT 42 AS duckdb_ok')"
 
 dbt-docs-generate:
 	cd dbt && uv run dbt docs generate --profiles-dir .
