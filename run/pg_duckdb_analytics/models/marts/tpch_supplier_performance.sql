@@ -12,9 +12,9 @@
     supplier_name text,
     nation_name text,
     region_name text,
-    revenue double precision,
+    revenue numeric,
     order_count bigint,
-    avg_discount numeric(18,4)
+    avg_discount numeric
     
     )
  ;
@@ -31,7 +31,7 @@
     suppliers.name as supplier_name,
     nations.name as nation_name,
     regions.name as region_name,
-    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    round(sum(lineitems.extended_price * (1 - lineitems.discount)), 2) as revenue,
     count(distinct lineitems.order_key) as order_count,
     round(avg(lineitems.discount)::numeric, 4) as avg_discount
 from "analytics"."dev"."stg_lineitems" as lineitems

@@ -12,10 +12,10 @@
     ship_date date,
     line_count bigint,
     order_count bigint,
-    total_quantity double precision,
-    revenue double precision,
-    revenue_after_tax double precision,
-    avg_discount double precision
+    total_quantity numeric(38,2),
+    revenue numeric(38,2),
+    revenue_after_tax numeric(38,2),
+    avg_discount numeric
     
     )
  ;
@@ -33,10 +33,12 @@ select
     lineitems.ship_date,
     count(*) as line_count,
     count(distinct lineitems.order_key) as order_count,
-    sum(lineitems.quantity) as total_quantity,
-    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
-    sum(lineitems.extended_price * (1 - lineitems.discount) * (1 + lineitems.tax)) as revenue_after_tax,
-    avg(lineitems.discount) as avg_discount
+    round(sum(lineitems.quantity), 2)::numeric as total_quantity,
+    round(sum(lineitems.extended_price * (1 - lineitems.discount)), 2)::numeric as revenue,
+    round(
+        sum(lineitems.extended_price * (1 - lineitems.discount) * (1 + lineitems.tax)), 2
+    )::numeric as revenue_after_tax,
+    avg(lineitems.discount)::numeric as avg_discount
 from "analytics"."dev"."stg_lineitems" as lineitems
 
 

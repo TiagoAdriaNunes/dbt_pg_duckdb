@@ -4,5 +4,5 @@ select
     s_address::text as address,
     s_nationkey::bigint as nation_key,
     s_phone::text as phone,
-    s_acctbal::double precision as account_balance
+    s_acctbal::numeric(15, 2) as account_balance
 from "analytics"."raw"."supplier"

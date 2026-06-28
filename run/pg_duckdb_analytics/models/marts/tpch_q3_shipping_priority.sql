@@ -9,7 +9,7 @@
   
   (
     order_key bigint,
-    revenue double precision,
+    revenue numeric,
     order_date date,
     ship_priority bigint
     
@@ -25,7 +25,7 @@
     from (
         select
     lineitems.order_key,
-    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    round(sum(lineitems.extended_price * (1 - lineitems.discount)), 2) as revenue,
     orders.order_date,
     orders.ship_priority
 from "analytics"."dev"."stg_customers" as customers

@@ -9,7 +9,7 @@
   
   (
     market_segment text,
-    revenue double precision,
+    revenue numeric,
     order_count bigint,
     customer_count bigint
     
@@ -25,7 +25,7 @@
     from (
         select
     customers.market_segment,
-    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    round(sum(lineitems.extended_price * (1 - lineitems.discount)), 2) as revenue,
     count(distinct orders.order_key) as order_count,
     count(distinct orders.customer_key) as customer_count
 from "analytics"."dev"."stg_lineitems" as lineitems
