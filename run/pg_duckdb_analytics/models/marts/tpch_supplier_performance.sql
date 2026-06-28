@@ -14,7 +14,7 @@
     region_name text,
     revenue numeric,
     order_count bigint,
-    avg_discount numeric
+    avg_discount double precision
     
     )
  ;

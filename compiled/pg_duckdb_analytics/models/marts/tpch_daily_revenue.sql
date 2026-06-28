@@ -9,7 +9,7 @@ select
     round(
         sum(lineitems.extended_price * (1 - lineitems.discount) * (1 + lineitems.tax)), 2
     )::numeric as revenue_after_tax,
-    avg(lineitems.discount)::numeric as avg_discount
+    avg(lineitems.discount) as avg_discount
 from "analytics"."dev"."stg_lineitems" as lineitems
 
 
