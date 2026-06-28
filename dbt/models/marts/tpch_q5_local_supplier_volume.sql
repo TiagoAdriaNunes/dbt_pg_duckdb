@@ -1,6 +1,6 @@
 select
     nations.name as nation_name,
-    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue
+    round(sum(lineitems.extended_price * (1 - lineitems.discount)), 2) as revenue
 from {{ ref('stg_customers') }} as customers
 inner join {{ ref('stg_orders') }} as orders on customers.customer_key = orders.customer_key
 inner join {{ ref('stg_lineitems') }} as lineitems on orders.order_key = lineitems.order_key

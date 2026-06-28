@@ -4,6 +4,6 @@ select
     c_address::text as address,
     c_nationkey::bigint as nation_key,
     c_phone::text as phone,
-    c_acctbal::double precision as account_balance,
+    c_acctbal::numeric(15, 2) as account_balance,
     c_mktsegment::text as market_segment
 from {{ source('tpch', 'customer') }}

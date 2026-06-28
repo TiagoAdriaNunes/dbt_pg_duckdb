@@ -1,6 +1,6 @@
 select
     lineitems.order_key,
-    sum(lineitems.extended_price * (1 - lineitems.discount)) as revenue,
+    round(sum(lineitems.extended_price * (1 - lineitems.discount)), 2) as revenue,
     orders.order_date,
     orders.ship_priority
 from {{ ref('stg_customers') }} as customers

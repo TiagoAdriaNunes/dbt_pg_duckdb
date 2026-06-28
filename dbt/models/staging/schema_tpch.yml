@@ -16,7 +16,7 @@ models:
       - name: status
         data_type: text
       - name: total_price
-        data_type: double precision
+        data_type: numeric
       - name: order_date
         data_type: date
         tests: [not_null]
@@ -45,15 +45,15 @@ models:
       - name: line_number
         data_type: bigint
       - name: quantity
-        data_type: double precision
+        data_type: numeric
       - name: extended_price
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: discount
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: tax
-        data_type: double precision
+        data_type: numeric
       - name: return_flag
         data_type: text
       - name: line_status
@@ -90,7 +90,7 @@ models:
       - name: phone
         data_type: text
       - name: account_balance
-        data_type: double precision
+        data_type: numeric
       - name: market_segment
         data_type: text
         tests: [not_null]
@@ -115,7 +115,7 @@ models:
       - name: phone
         data_type: text
       - name: account_balance
-        data_type: double precision
+        data_type: numeric
 
   - name: stg_nations
     description: "Cleaned TPC-H nations with renamed columns"

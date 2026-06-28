@@ -15,7 +15,7 @@ PG_PORT = os.environ.get("POSTGRES_PORT", "5432")
 PG_USER = os.environ.get("POSTGRES_USER", "postgres")
 PG_PASSWORD = os.environ.get("POSTGRES_PASSWORD", "duckdb")
 PG_DB = os.environ.get("POSTGRES_DB", "analytics")
-RUNS = int(os.environ.get("BENCHMARK_RUNS", "3"))
+RUNS = int(os.environ.get("BENCHMARK_RUNS", "10"))
 
 QUERIES = {
     "Q1 pricing summary": """
@@ -94,6 +94,7 @@ def main() -> None:
     conn.autocommit = True
     cur = conn.cursor()
 
+    cur.execute("SET duckdb.force_execution = false")
     cur.execute("SELECT count(*) FROM raw.lineitem")
     lineitem_count = cur.fetchone()[0]
     print(f"\nTPC-H benchmark  —  best of {RUNS} runs  —  {lineitem_count:,} lineitems\n")

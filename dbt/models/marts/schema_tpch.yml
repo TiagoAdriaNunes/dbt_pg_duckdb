@@ -11,7 +11,7 @@ models:
         data_type: text
         tests: [unique, not_null]
       - name: revenue
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: order_count
         data_type: bigint
@@ -36,13 +36,13 @@ models:
         data_type: bigint
         tests: [not_null]
       - name: total_quantity
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: revenue
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: revenue_after_tax
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: avg_discount
         data_type: double precision
@@ -67,13 +67,13 @@ models:
         data_type: text
         tests: [not_null]
       - name: revenue
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: order_count
         data_type: bigint
         tests: [not_null]
       - name: avg_discount
-        data_type: numeric(18,4)
+        data_type: double precision
         tests: [not_null]
 
   - name: tpch_q1_pricing_summary
@@ -89,16 +89,16 @@ models:
         data_type: text
         tests: [not_null]
       - name: sum_qty
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: sum_base_price
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: sum_disc_price
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: sum_charge
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: avg_qty
         data_type: double precision
@@ -123,7 +123,7 @@ models:
         data_type: bigint
         tests: [not_null]
       - name: revenue
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
       - name: order_date
         data_type: date
@@ -142,5 +142,5 @@ models:
         data_type: text
         tests: [unique, not_null]
       - name: revenue
-        data_type: double precision
+        data_type: numeric
         tests: [not_null]
