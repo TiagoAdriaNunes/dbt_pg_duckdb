@@ -1,12 +1,14 @@
 """
-Benchmark TPC-H Q1, Q3, Q5 under plain Postgres vs pg_duckdb's DuckDB engine.
-Runs queries against raw schema tables to isolate execution engine differences.
+Benchmark TPC-H Q1, Q3, Q5 comparing pg_duckdb's two execution engines.
+Both run inside the same Postgres instance against the same raw.* tables.
+  PG executor  : duckdb.force_execution = false  (uses indexes, PG planner)
+  DuckDB engine: duckdb.force_execution = true   (vectorized, ignores PG indexes)
 """
 
 import os
 import time
 
-import psycopg2
+import psycopg
 
 PG_HOST = os.environ.get("POSTGRES_HOST", "localhost")
 PG_PORT = os.environ.get("POSTGRES_PORT", "5432")
@@ -82,7 +84,7 @@ def bench(cur, sql: str, use_duckdb: bool) -> float:
 
 
 def main() -> None:
-    conn = psycopg2.connect(
+    conn = psycopg.connect(
         host=PG_HOST,
         port=int(PG_PORT),
         dbname=PG_DB,
@@ -95,15 +97,15 @@ def main() -> None:
     cur.execute("SELECT count(*) FROM raw.lineitem")
     lineitem_count = cur.fetchone()[0]
     print(f"\nTPC-H benchmark  —  best of {RUNS} runs  —  {lineitem_count:,} lineitems\n")
-    print(f"{'Query':<28} {'Postgres':>10} {'DuckDB':>10} {'Speedup':>10}")
-    print("-" * 62)
+    print(f"{'Query':<28} {'PG executor':>12} {'DuckDB engine':>14} {'DuckDB speedup':>15}")
+    print("-" * 72)
 
     for name, sql in QUERIES.items():
         t_pg = bench(cur, sql, use_duckdb=False)
         t_dk = bench(cur, sql, use_duckdb=True)
         speedup = t_pg / t_dk
-        marker = " <--" if speedup > 2 else ""
-        print(f"{name:<28} {t_pg:>9.3f}s {t_dk:>9.3f}s {speedup:>9.1f}x{marker}")
+        winner = "DuckDB" if speedup > 1 else "PG    "
+        print(f"{name:<28} {t_pg:>11.3f}s {t_dk:>13.3f}s {speedup:>13.1f}x  [{winner}]")
 
     print()
     cur.close()
