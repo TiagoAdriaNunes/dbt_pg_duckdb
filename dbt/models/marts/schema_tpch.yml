@@ -45,7 +45,7 @@ models:
         data_type: numeric(38,2)
         tests: [not_null]
       - name: avg_discount
-        data_type: numeric
+        data_type: double precision
         tests: [not_null]
 
   - name: tpch_supplier_performance
@@ -73,7 +73,7 @@ models:
         data_type: bigint
         tests: [not_null]
       - name: avg_discount
-        data_type: numeric
+        data_type: double precision
         tests: [not_null]
 
   - name: tpch_q1_pricing_summary
@@ -101,13 +101,13 @@ models:
         data_type: numeric
         tests: [not_null]
       - name: avg_qty
-        data_type: numeric
+        data_type: double precision
         tests: [not_null]
       - name: avg_price
-        data_type: numeric
+        data_type: double precision
         tests: [not_null]
       - name: avg_disc
-        data_type: numeric
+        data_type: double precision
         tests: [not_null]
       - name: count_order
         data_type: bigint
