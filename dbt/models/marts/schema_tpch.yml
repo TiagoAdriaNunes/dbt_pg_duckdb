@@ -36,13 +36,13 @@ models:
         data_type: bigint
         tests: [not_null]
       - name: total_quantity
-        data_type: numeric
+        data_type: numeric(38,2)
         tests: [not_null]
       - name: revenue
-        data_type: numeric
+        data_type: numeric(38,2)
         tests: [not_null]
       - name: revenue_after_tax
-        data_type: numeric
+        data_type: numeric(38,2)
         tests: [not_null]
       - name: avg_discount
         data_type: double precision
