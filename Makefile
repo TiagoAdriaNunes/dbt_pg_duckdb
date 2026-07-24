@@ -4,7 +4,7 @@ all: up dbt-deps tpch-init dbt-run dbt-test lint lint-sql
 
 up:
 	@docker info > /dev/null 2>&1 || (echo "Docker daemon is not running. Start Docker Desktop and retry."; exit 1)
-	docker compose up db -d --wait
+	docker compose up db clickhouse -d --wait
 
 help:
 	@echo "make all         run everything (up + deps + tpch-init + seed + run + test + lint)"
@@ -17,9 +17,9 @@ help:
 	@echo "make lint        ruff check + format check"
 	@echo "make lint-sql    sqlfluff lint on all dbt SQL models and macros"
 	@echo "make duckdb-cli  open DuckDB shell with pg attached as 'pg'"
-	@echo "make tpch-init          load TPC-H benchmark data into raw schema (idempotent)"
+	@echo "make tpch-init          load TPC-H benchmark data into Postgres + ClickHouse (idempotent)"
 	@echo "make simulate-new-data  insert 1000 new lineitem rows with ship_date=today"
-	@echo "make benchmark          run TPC-H Q1/Q3/Q5 under Postgres vs DuckDB engine"
+	@echo "make benchmark          run TPC-H Q1/Q3/Q5 across PG executor, DuckDB engine, ClickHouse"
 	@echo "make dbt-docs-generate  generate docs catalog (no server)"
 	@echo "make dbt-docs-serve     generate docs and open at http://localhost:8080"
 

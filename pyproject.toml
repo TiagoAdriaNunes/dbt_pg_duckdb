@@ -3,6 +3,7 @@ name = "dbt-pg-duckdb"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "clickhouse-connect>=1.6.0",
     "dbt-postgres>=1.9",
     "duckdb>=1.2",
     "psycopg[binary]>=3.0",
