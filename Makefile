@@ -9,7 +9,8 @@ up:
 help:
 	@echo "make all         run everything (up + deps + tpch-init + seed + run + test + lint)"
 	@echo "make up          start DB and wait until healthy"
-	@echo "make down        stop containers and remove volumes"
+	@echo "make down        stop and remove containers (keeps volumes)"
+	@echo "make clean       stop containers and wipe volumes + images"
 	@echo "make dbt-deps    install dbt packages"
 	@echo "make dbt-run     run all models"
 	@echo "make dbt-test     run schema tests"
@@ -24,7 +25,7 @@ help:
 	@echo "make dbt-docs-serve     generate docs and open at http://localhost:8080"
 
 down:
-	docker compose down -v
+	docker compose down
 
 clean:
 	docker compose down -v --rmi all

@@ -1,11 +1,13 @@
 """
-Initialize TPC-H benchmark data into pg_duckdb.
+Initialize TPC-H benchmark data into pg_duckdb, ClickHouse, a plain DuckDB file,
+Parquet files, and a DuckLake catalog.
 Generates synthetic supply-chain data at the requested scale factor.
 Idempotent: skips generation if tables already exist in the raw schema.
 """
 
 import logging
 import os
+import shutil
 import tempfile
 import time
 
@@ -31,13 +33,27 @@ CH_USER = os.environ.get("CLICKHOUSE_USER", "default")
 CH_PASSWORD = os.environ.get("CLICKHOUSE_PASSWORD", "duckdb")
 CH_DB = os.environ.get("CLICKHOUSE_DB", "analytics")
 
-SCALE_FACTOR = float(os.environ.get("TPCH_SCALE_FACTOR", "1"))  # sf=0.1 ≈ 100 MB, sf=1 ≈ 1 GB
+SCALE_FACTOR = float(os.environ.get("TPCH_SCALE_FACTOR", "3"))  # sf=0.1 ≈ 100 MB, sf=1 ≈ 1 GB
 CH_BATCH_SIZE = int(os.environ.get("CH_INSERT_BATCH_SIZE", "100000"))
 # DuckDB defaults to ~80% of *total* system RAM, ignoring whatever else is already
 # running (IDE, Docker containers, ...). Cap it explicitly to avoid over-committing.
 DUCKDB_MEMORY_LIMIT = os.environ.get("DUCKDB_MEMORY_LIMIT", "2GB")
 DUCKDB_THREADS = os.environ.get("DUCKDB_THREADS", "2")
-STAGING_DB = os.path.join(tempfile.gettempdir(), "tpch_staging.duckdb")
+# Kept around after load (not deleted) so benchmark.py can query it directly as a
+# fourth, native-DuckDB-storage engine — no Postgres heap scan, no network hop.
+STAGING_DB = os.environ.get(
+    "TPCH_DUCKDB_PATH", os.path.join(tempfile.gettempdir(), "tpch_staging.duckdb")
+)
+PARQUET_DIR = os.environ.get(
+    "TPCH_PARQUET_DIR", os.path.join(tempfile.gettempdir(), "tpch_parquet")
+)
+LANCE_DIR = os.environ.get("TPCH_LANCE_DIR", os.path.join(tempfile.gettempdir(), "tpch_lance"))
+VORTEX_DIR = os.environ.get("TPCH_VORTEX_DIR", os.path.join(tempfile.gettempdir(), "tpch_vortex"))
+DUCKLAKE_DIR = os.environ.get(
+    "TPCH_DUCKLAKE_DIR", os.path.join(tempfile.gettempdir(), "tpch_ducklake")
+)
+DUCKLAKE_METADATA = os.path.join(DUCKLAKE_DIR, "metadata.ducklake")
+DUCKLAKE_DATA = os.path.join(DUCKLAKE_DIR, "data")
 
 PG_CONN = f"host={PG_HOST} port={PG_PORT} dbname={PG_DB} user={PG_USER} password={PG_PASSWORD}"
 
@@ -117,6 +133,11 @@ def generate_staging() -> None:
     staging.execute(f"SET temp_directory='{tempfile.gettempdir()}'")
     staging.execute("INSTALL tpch; LOAD tpch")
     staging.execute(f"CALL dbgen(sf={SCALE_FACTOR})")
+    # Views under raw.* so the same benchmark SQL (raw.lineitem, ...) runs unmodified
+    # against this file as a fourth "native DuckDB" engine, alongside PG/DuckDB-engine/ClickHouse.
+    staging.execute("CREATE SCHEMA IF NOT EXISTS raw")
+    for table in TABLES:
+        staging.execute(f"CREATE OR REPLACE VIEW raw.{table} AS SELECT * FROM main.{table}")
     staging.close()
     log.info("Data generation done in %.1fs", time.time() - t0)
 
@@ -181,6 +202,61 @@ def load_into_clickhouse(client) -> None:
     conn.close()
 
 
+def export_parquet() -> None:
+    log.info("Exporting raw.* to Parquet files at %s...", PARQUET_DIR)
+    os.makedirs(PARQUET_DIR, exist_ok=True)
+    conn = _cap_resources(duckdb.connect(STAGING_DB, read_only=True))
+    t0 = time.time()
+    for table in TABLES:
+        path = os.path.join(PARQUET_DIR, f"{table}.parquet")
+        conn.execute(f"COPY raw.{table} TO '{path}' (FORMAT parquet, COMPRESSION zstd)")
+    conn.close()
+    log.info("Parquet export done in %.1fs", time.time() - t0)
+
+
+def export_lance() -> None:
+    log.info("Exporting raw.* to Lance datasets at %s...", LANCE_DIR)
+    os.makedirs(LANCE_DIR, exist_ok=True)
+    conn = _cap_resources(duckdb.connect(STAGING_DB, read_only=True))
+    conn.execute("INSTALL lance; LOAD lance")
+    t0 = time.time()
+    for table in TABLES:
+        path = os.path.join(LANCE_DIR, f"{table}.lance")
+        conn.execute(f"COPY raw.{table} TO '{path}' (FORMAT lance, MODE 'overwrite')")
+    conn.close()
+    log.info("Lance export done in %.1fs", time.time() - t0)
+
+
+def export_vortex() -> None:
+    log.info("Exporting raw.* to Vortex files at %s...", VORTEX_DIR)
+    os.makedirs(VORTEX_DIR, exist_ok=True)
+    conn = _cap_resources(duckdb.connect(STAGING_DB, read_only=True))
+    conn.execute("INSTALL vortex; LOAD vortex")
+    t0 = time.time()
+    for table in TABLES:
+        path = os.path.join(VORTEX_DIR, f"{table}.vortex")
+        conn.execute(f"COPY raw.{table} TO '{path}' (FORMAT vortex)")
+    conn.close()
+    log.info("Vortex export done in %.1fs", time.time() - t0)
+
+
+def load_ducklake() -> None:
+    log.info("Loading TPC-H tables into a DuckLake catalog at %s...", DUCKLAKE_DIR)
+    if os.path.exists(DUCKLAKE_DIR):
+        shutil.rmtree(DUCKLAKE_DIR)
+    os.makedirs(DUCKLAKE_DATA, exist_ok=True)
+    conn = _cap_resources(duckdb.connect())
+    conn.execute("INSTALL ducklake")
+    conn.execute(f"ATTACH '{STAGING_DB}' AS staging (READ_ONLY)")
+    conn.execute(f"ATTACH 'ducklake:{DUCKLAKE_METADATA}' AS lake (DATA_PATH '{DUCKLAKE_DATA}')")
+    conn.execute("CREATE SCHEMA lake.raw")
+    t0 = time.time()
+    for table in TABLES:
+        conn.execute(f"CREATE TABLE lake.raw.{table} AS SELECT * FROM staging.{table}")
+    conn.close()
+    log.info("DuckLake load done in %.1fs", time.time() - t0)
+
+
 def main() -> None:
     pg_conn = get_conn()
     pg_done = already_loaded(pg_conn)
@@ -188,23 +264,46 @@ def main() -> None:
 
     ch_client = get_ch_client()
     ch_done = ch_already_loaded(ch_client)
+    native_done = os.path.exists(STAGING_DB)
+    parquet_done = os.path.exists(os.path.join(PARQUET_DIR, f"{TABLES[-1]}.parquet"))
+    lance_done = os.path.exists(os.path.join(LANCE_DIR, f"{TABLES[-1]}.lance"))
+    vortex_done = os.path.exists(os.path.join(VORTEX_DIR, f"{TABLES[-1]}.vortex"))
+    ducklake_done = os.path.exists(DUCKLAKE_METADATA)
 
-    if pg_done and ch_done:
+    if (
+        pg_done
+        and ch_done
+        and native_done
+        and parquet_done
+        and lance_done
+        and vortex_done
+        and ducklake_done
+    ):
         return
 
-    try:
-        generate_staging()
+    generate_staging()
 
-        if not pg_done:
-            pg_conn = get_conn()
-            load_into_postgres(pg_conn)
-            pg_conn.close()
+    if not pg_done:
+        pg_conn = get_conn()
+        load_into_postgres(pg_conn)
+        pg_conn.close()
 
-        if not ch_done:
-            load_into_clickhouse(ch_client)
-    finally:
-        if os.path.exists(STAGING_DB):
-            os.remove(STAGING_DB)
+    if not ch_done:
+        load_into_clickhouse(ch_client)
+
+    if not parquet_done:
+        export_parquet()
+
+    if not lance_done:
+        export_lance()
+
+    if not vortex_done:
+        export_vortex()
+
+    if not ducklake_done:
+        load_ducklake()
+
+    log.info("Native DuckDB file kept at %s for benchmark.py", STAGING_DB)
 
 
 if __name__ == "__main__":
